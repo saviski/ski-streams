@@ -1,0 +1,8 @@
+/.vscode
+/node_modules
+/pnpm-lock.yaml
+/streams.js
+/streams.min.js
+/streams.min.js.map
+/.types
+/js
