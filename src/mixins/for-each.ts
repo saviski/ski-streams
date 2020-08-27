@@ -1,5 +1,5 @@
-import { AsyncStream } from '../async-stream'
-import { forEach } from '../op/for-each'
+import { AsyncStream } from '../async-stream.js'
+import { forEach } from '../op/for-each.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {

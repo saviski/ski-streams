@@ -2,15 +2,15 @@
   "name": "@ski/streams",
   "version": "0.1.0",
   "description": "Reactive streams but using only native async generators: function*",
-  "main": "streams.min.js",
+  "type": "module",
+  "main": "streams.js",
   "module": "streams.js",
   "types": "src/index.ts",
   "scripts": {
     "build": "run-s clean build:*",
     "watch": "run-p \"build:* -- --watch\"",
     "clean": "rimraf js .types",
-    "build:bundle": "rollup -c",
-    "build:typescript": "ttsc"
+    "build:bundle": "rollup -c"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "url": "https://github.com/saviski/ski-streams/issues"
   },
   "homepage": "https://github.com/saviski/ski-streams#readme",
+  "dependencies": {},
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^9.0.0",
     "npm-run-all": "^4.1.5",

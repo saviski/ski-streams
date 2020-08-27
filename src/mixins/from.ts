@@ -1,5 +1,5 @@
-import { HasAsyngIterator, AsyncStream } from '../async-stream'
-import { clone } from '../op/clone'
+import { HasAsyngIterator, AsyncStream } from '../async-stream.js'
+import { clone } from '../op/clone.js'
 
 export function from<T>(source: HasAsyngIterator<T>): AsyncStream<T> {
   return Object.create(

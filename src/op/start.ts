@@ -1,5 +1,5 @@
-import { clone } from './clone'
-import { HasAsyngIterator } from '../async-stream'
+import { clone } from './clone.js'
+import { HasAsyngIterator } from '../async-stream.js'
 
 export function start<T>(source: HasAsyngIterator<T>, value: T): AsyncGenerator<T> {
   const generator = clone(source)

@@ -1,5 +1,5 @@
-import { cachedNext } from './cached-next'
-import { DONE, HasAsyngIterator } from '../async-stream'
+import { cachedNext } from './cached-next.js'
+import { DONE, HasAsyngIterator } from '../async-stream.js'
 
 export function clone<T>(source: HasAsyngIterator<T>): AsyncGenerator<T> {
   const cached = cachedNext(source[Symbol.asyncIterator]())

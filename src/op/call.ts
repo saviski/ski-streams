@@ -1,5 +1,5 @@
-import { map } from './map'
-import { clone } from './clone'
+import { map } from './map.js'
+import { clone } from './clone.js'
 import { HasAsyngIterator } from '../async-stream.js'
 
 export function call<T, R>(

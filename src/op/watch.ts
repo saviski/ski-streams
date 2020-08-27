@@ -1,4 +1,4 @@
-import { HasAsyngIterator } from '../async-stream'
+import { HasAsyngIterator } from '../async-stream.js'
 import { next } from './next.js'
 
 export const STREAM_VALUE = new WeakMap<HasAsyngIterator<any>, any>()

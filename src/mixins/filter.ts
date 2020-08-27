@@ -1,6 +1,6 @@
-import { AsyncStream } from '../async-stream'
-import { filter, filterValue } from '../op/filter'
-import { from } from './from'
+import { AsyncStream } from '../async-stream.js'
+import { filter, filterValue } from '../op/filter.js'
+import { from } from './from.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {

@@ -1,6 +1,6 @@
-import { AsyncStream } from '../async-stream'
-import { proxy } from '../op/proxy'
-import { from } from './from'
+import { AsyncStream } from '../async-stream.js'
+import { proxy } from '../op/proxy.js'
+import { from } from './from.js'
 
 type AsyncGeneratorProxy<T> = {
   [K in keyof T]: AsyncGeneratorProxy<T[K]>

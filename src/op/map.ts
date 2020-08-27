@@ -1,4 +1,4 @@
-import { HasAsyngIterator } from '../async-stream'
+import { HasAsyngIterator } from '../async-stream.js'
 
 export async function* map<T, U>(
   source: HasAsyngIterator<T>,

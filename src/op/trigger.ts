@@ -1,5 +1,5 @@
-import { DONE } from '../async-stream'
-import { hasAsyncGenerator } from './has'
+import { DONE } from '../async-stream.js'
+import { hasAsyncGenerator } from './has.js'
 
 export const FINISHED: AsyncGenerator<any, void, any> = <any>{
   next: () => new Promise(() => {}),

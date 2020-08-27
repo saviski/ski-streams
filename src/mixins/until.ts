@@ -1,6 +1,6 @@
-import { AsyncStream } from '../async-stream'
-import { from } from './from'
-import { until } from '../op/until'
+import { AsyncStream } from '../async-stream.js'
+import { from } from './from.js'
+import { until } from '../op/until.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {

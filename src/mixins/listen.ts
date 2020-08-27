@@ -1,5 +1,5 @@
-import { AsyncStream } from '../async-stream'
-import { listen } from '../op/listen'
+import { AsyncStream } from '../async-stream.js'
+import { listen } from '../op/listen.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {

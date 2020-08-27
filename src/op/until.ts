@@ -1,5 +1,5 @@
-import { clone } from './clone'
-import { hasAsyncGenerator } from './has'
+import { clone } from './clone.js'
+import { hasAsyncGenerator } from './has.js'
 import { HasAsyngIterator } from '../async-stream.js'
 
 export async function* until<T>(

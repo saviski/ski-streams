@@ -1,6 +1,6 @@
-import './mixins'
+import './mixins.js'
 
-export { AsyncStream, HasAsyngIterator } from './async-stream'
+export { AsyncStream, HasAsyngIterator } from './async-stream.js'
 
 export * from './op/cached-next.js'
 export * from './op/call.js'

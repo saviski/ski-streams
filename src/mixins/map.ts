@@ -1,6 +1,6 @@
-import { AsyncStream } from '../async-stream'
-import { map } from '../op/map'
-import { from } from './from'
+import { AsyncStream } from '../async-stream.js'
+import { map } from '../op/map.js'
+import { from } from './from.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {

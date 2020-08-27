@@ -1,6 +1,6 @@
-import { AsyncStream } from '../async-stream'
-import { from } from './from'
-import { reduce } from '../op/reduce'
+import { AsyncStream } from '../async-stream.js'
+import { from } from './from.js'
+import { reduce } from '../op/reduce.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {
