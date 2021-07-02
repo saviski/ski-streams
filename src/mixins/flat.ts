@@ -1,5 +1,5 @@
 import { AsyncStream } from '../async-stream.js'
-import { from } from './from.js'
+import { stream } from '../stream.js'
 import { flat } from '../op/flat.js'
 
 declare module '../async-stream' {
@@ -11,7 +11,7 @@ declare module '../async-stream' {
 Object.defineProperties(AsyncStream, {
   flat: {
     get() {
-      return from(flat(this))
+      return stream(flat(this))
     },
   },
 })

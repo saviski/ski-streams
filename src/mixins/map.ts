@@ -1,6 +1,6 @@
 import { AsyncStream } from '../async-stream.js'
 import { map } from '../op/map.js'
-import { from } from './from.js'
+import { stream } from '../stream.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {
@@ -9,5 +9,5 @@ declare module '../async-stream' {
 }
 
 AsyncStream.prototype.map = function (next, index) {
-  return from(map(this, next, index))
+  return stream(map(this, next, index))
 }

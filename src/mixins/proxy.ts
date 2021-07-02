@@ -1,6 +1,6 @@
 import { AsyncStream } from '../async-stream.js'
 import { proxy } from '../op/proxy.js'
-import { from } from './from.js'
+import { stream } from '../stream.js'
 
 type AsyncGeneratorProxy<T> = {
   [K in keyof T]: AsyncGeneratorProxy<T[K]>
@@ -15,7 +15,7 @@ declare module '../async-stream' {
 Object.defineProperties(AsyncStream.prototype, {
   proxy: {
     get(this: AsyncStream<any>) {
-      return proxy(this, from)
+      return proxy(this, stream)
     },
   },
 })

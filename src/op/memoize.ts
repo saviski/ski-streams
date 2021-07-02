@@ -3,7 +3,7 @@ import { next } from './next.js'
 
 export const STREAM_VALUE = new WeakMap<HasAsyngIterator<any>, any>()
 
-export async function watch<T>(source: HasAsyngIterator<T>) {
+export async function memoize<T>(source: HasAsyngIterator<T>) {
   const generator = source[Symbol.asyncIterator]()
   do {
     let nextResult = next(generator)

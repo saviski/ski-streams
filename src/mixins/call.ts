@@ -1,5 +1,5 @@
 import { AsyncStream } from '../async-stream.js'
-import { from } from './from.js'
+import { stream } from '../stream.js'
 import { call } from '../op/call.js'
 
 declare module '../async-stream' {
@@ -12,5 +12,5 @@ declare module '../async-stream' {
 }
 
 AsyncStream.prototype.call = function (key, ...args) {
-  return call(this, key, from, ...args)
+  return call(this, key, stream, ...args)
 }

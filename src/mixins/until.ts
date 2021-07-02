@@ -1,5 +1,5 @@
 import { AsyncStream } from '../async-stream.js'
-import { from } from './from.js'
+import { stream } from '../stream.js'
 import { until } from '../op/until.js'
 
 declare module '../async-stream' {
@@ -9,5 +9,5 @@ declare module '../async-stream' {
 }
 
 AsyncStream.prototype.until = function (...events) {
-  return from(until(this, ...events))
+  return stream(until(this, ...events))
 }

@@ -10,14 +10,14 @@ export const FINISHED: AsyncGenerator<any, void, any> = <any>{
   },
 }
 
-export function trigger<T, U, R>(
+export function trigger<T, R>(
   source: AsyncGenerator<T>,
   generator: AsyncGenerator<R>
 ): AsyncGenerator<R, any, any>
 
-export function trigger<T, U, R, V>(
+export function trigger<T, R, V = any>(
   source: AsyncGenerator<T>,
-  factory: (this: V, v: U) => AsyncGenerator<R>,
+  factory: (this: V, v: T) => AsyncGenerator<R>,
   context?: V
 ): AsyncGenerator<R, any, any>
 

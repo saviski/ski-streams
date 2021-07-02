@@ -1,20 +1,23 @@
 import { clone } from './clone.js'
 
-export function nested<T, T1, R>(
-  source: AsyncGenerator<T>,
+export function nested<T1, R>(
+  source: AsyncGenerator<T1>,
   g1: (v0: T1) => AsyncGenerator<R>
 ): AsyncGenerator<R>
-export function nested<T, T1, T2, R>(
-  source: AsyncGenerator<T>,
+
+export function nested<T1, T2, R>(
+  source: AsyncGenerator<T1>,
   g1: (v0: T1) => AsyncGenerator<T2>,
   g2: (v0: T1, v1: T2) => AsyncGenerator<R>
 ): AsyncGenerator<R>
-export function nested<T, T1, T2, T3, R>(
-  source: AsyncGenerator<T>,
+
+export function nested<T1, T2, T3, R>(
+  source: AsyncGenerator<T1>,
   g1: (v0: T1) => AsyncGenerator<T2>,
   g2: (v0: T1, v1: T2) => AsyncGenerator<T3>,
   g3: (v0: T1, v1: T2, v3: T3) => AsyncGenerator<R>
 ): AsyncGenerator<R>
+
 export function nested<T extends any[]>(
   source: AsyncGenerator<T[0]>,
   ...gen: Array<(...v: T) => AsyncGenerator<any>>
