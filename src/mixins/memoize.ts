@@ -1,5 +1,5 @@
 import { AsyncStream } from '../async-stream.js'
-import { HasAsyngIterator } from '../async-stream'
+import { HasAsyngIterator } from '../async-stream.js'
 import { memoize } from '../op/memoize.js'
 import { current } from '../op/current.js'
 
