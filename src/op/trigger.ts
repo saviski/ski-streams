@@ -1,44 +1,37 @@
-import { DONE } from '../async-stream.js'
-import { hasAsyncGenerator } from './has.js'
+const FOREVER = new Promise<any>(() => {})
 
-export const FINISHED: AsyncGenerator<any, void, any> = <any>{
-  next: () => new Promise(() => {}),
-  return: () => DONE,
-  throw: () => DONE,
-  [Symbol.asyncIterator]() {
-    return this
-  },
-}
+export async function* trigger<T, U, This = any>(
+  source: AsyncIterable<T>,
+  emitter: (this: This, v: T) => AsyncIterable<U>,
+  context?: This
+): AsyncIterable<U> {
+  let signaller = source[Symbol.asyncIterator]()
+  let target: AsyncIterator<U> | undefined
 
-export function trigger<T, R>(
-  source: AsyncGenerator<T>,
-  generator: AsyncGenerator<R>
-): AsyncGenerator<R, any, any>
+  let signal!: Promise<IteratorResult<T, T>>
+  let empty: boolean | undefined
+  let finished: boolean | undefined
 
-export function trigger<T, R, V = any>(
-  source: AsyncGenerator<T>,
-  factory: (this: V, v: T) => AsyncGenerator<R>,
-  context?: V
-): AsyncGenerator<R, any, any>
+  async function read() {
+    while (!empty) {
+      signal = signaller.next()
+      let result = await signal
+      empty = result.done
+      if (empty) {
+        signal = FOREVER
+        return
+      }
+      target?.return?.()
+      target = emitter.call(context!, result.value)[Symbol.asyncIterator]()
+    }
+  }
 
-export async function* trigger<T, U, R>(
-  source: AsyncGenerator<T>,
-  emitter,
-  context?
-): AsyncGenerator<R, any, any> {
-  let target = FINISHED
-  const build: (v: U) => AsyncGenerator<R> = hasAsyncGenerator(emitter)
-    ? () => emitter
-    : context
-    ? emitter.bind(context)
-    : emitter
-  const empty: (..._) => R[] = () => []
+  read()
+  await signal
 
-  while (source !== FINISHED || target !== FINISHED) {
-    // prettier-ignore
-    yield* await Promise.race([
-      source.next().then(({ value, done }) => done ? empty((source = FINISHED)) : empty(target.return(), (target = build(value)))),
-      target.next().then(({ value, done }) => done ? empty((target = FINISHED)) : [value]),
-    ])
+  while (!empty || !finished) {
+    const skip = signal.then(() => [])
+    const emit = target!.next().then(({ value, done }) => ((finished = done) ? (empty ? [] : FOREVER) : [value]))
+    yield* await Promise.race([skip, emit])
   }
 }

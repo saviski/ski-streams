@@ -1,3 +1,5 @@
-export function first<T>(source: AsyncGenerator<T>): Promise<T> {
-  return source.next().then(({ value }) => <T>value)
+export function first<T>(source: AsyncIterable<T>): Promise<T> {
+  return source[Symbol.asyncIterator]()
+    .next()
+    .then(({ value }) => <T>value)
 }

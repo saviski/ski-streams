@@ -1,13 +1,28 @@
-import { HasAsyngIterator } from '../async-stream.js'
-import { next } from './next.js'
+import { AsyncEmitter } from '../async-emitter.js'
 
-export const STREAM_VALUE = new WeakMap<HasAsyngIterator<any>, any>()
+export const UNINITIALIZED = Error('UNINITIALIZED')
 
-export async function memoize<T>(source: HasAsyngIterator<T>) {
-  const generator = source[Symbol.asyncIterator]()
-  do {
-    let nextResult = next(generator)
-    var data = await nextResult
-    !data.done && STREAM_VALUE.set(source, data.value)
-  } while (!data.done)
+export class MemoizedStream<T> extends AsyncEmitter<T> {
+  private val: any = UNINITIALIZED
+
+  constructor(private generator: AsyncIterable<T>, value?: T) {
+    super()
+    if (value) this.val = value
+    this.consume()
+  }
+
+  get value(): T {
+    if (this.val == UNINITIALIZED) throw this.val
+    return this.val
+  }
+
+  async consume() {
+    for await (let value of this.generator) {
+      this.yield((this.val = value))
+    }
+  }
+}
+
+export function memoize<T>(source: AsyncIterable<T>): MemoizedStream<T> {
+  return new MemoizedStream<T>(source)
 }

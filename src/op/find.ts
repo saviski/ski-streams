@@ -1,7 +1,5 @@
-import { HasAsyngIterator } from '../async-stream.js'
-
 export async function find<T, S extends T>(
-  source: HasAsyngIterator<T>,
+  source: AsyncIterable<T>,
   predicate: (value: T, index: number) => value is S,
   index = 0
 ): Promise<S> {

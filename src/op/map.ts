@@ -1,9 +1,7 @@
-import { HasAsyngIterator } from '../async-stream.js'
-
 export async function* map<T, U>(
-  source: HasAsyngIterator<T>,
+  source: AsyncIterable<T>,
   next: (v: T, index: number) => U,
   index = 0
-): AsyncGenerator<U> {
+): AsyncIterable<U> {
   for await (const value of source) yield next(value, index++)
 }

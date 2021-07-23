@@ -1,14 +1,9 @@
 import { map } from './map.js'
-import { clone } from './clone.js'
-import { HasAsyngIterator } from '../async-stream.js'
 
-export function call<T, R>(
-  source: HasAsyngIterator<T>,
-  method: keyof T,
-  wrap = clone,
-  ...args
-): AsyncGenerator<R> {
-  return wrap(
-    map<T, any>(source, data => (<any>data[method])(...args))
-  )
+export function call<T, K extends keyof T>(
+  source: AsyncIterable<T>,
+  method: K,
+  ...args: T[K] extends (...args: infer A) => any ? A : never
+): AsyncIterable<T[K] extends (...args: any[]) => infer R ? R : never> {
+  return map<T, any>(source, data => (<any>data[method])(...args))
 }

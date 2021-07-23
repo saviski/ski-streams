@@ -1,13 +1,13 @@
-import { AsyncEmitter } from '@ski/streams/streams.js'
+import { AsyncEmitter } from '../async-emitter.js'
 
-export function domEvents<K extends keyof GlobalEventHandlersEventMap>(
+export function domEvent<K extends keyof GlobalEventHandlersEventMap>(
   element: EventTarget,
   type: K
-): AsyncGenerator<GlobalEventHandlersEventMap[K], void, unknown>
+): AsyncIterable<GlobalEventHandlersEventMap[K]>
 
-export function domEvents<E extends Event = Event>(element: EventTarget, type: string): AsyncGenerator<E, void, unknown>
+export function domEvent<E extends Event = Event>(element: EventTarget, type: string): AsyncIterable<E>
 
-export async function* domEvents(element: EventTarget, type: string) {
+export async function* domEvent(element: EventTarget, type: string) {
   const emitter = new AsyncEmitter<Event>()
 
   const listener = event => emitter.yield(event)

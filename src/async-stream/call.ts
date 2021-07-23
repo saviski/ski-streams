@@ -6,11 +6,11 @@ declare module '../async-stream' {
   interface AsyncStream<T> {
     call<K extends keyof T>(
       key: K,
-      ...args
-    ): AsyncGenerator<ReturnType<T[K] extends (...a) => any ? T[K] : never>>
+      ...args: T[K] extends (...args: infer A) => any ? A : never
+    ): AsyncStream<T[K] extends (...args: any[]) => infer R ? R : never>
   }
 }
 
 AsyncStream.prototype.call = function (key, ...args) {
-  return call(this, key, stream, ...args)
+  return stream(call(this, key, stream, ...args))
 }

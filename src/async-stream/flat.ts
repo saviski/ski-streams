@@ -1,13 +1,13 @@
 import { AsyncStream } from '../async-stream.js'
-import { emit } from '../op/emit.js'
 import { stream } from '../stream.js'
+import { flat } from '../op/flat.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {
-    emit(value: T): AsyncStream<T>
+    flat(): AsyncStream<T>
   }
 }
 
-AsyncStream.prototype.emit = function (value) {
-  return stream(emit(value))
+AsyncStream.prototype.flat = function () {
+  return stream(flat(this))
 }
