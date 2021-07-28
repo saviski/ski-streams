@@ -32,6 +32,14 @@ export async function* trigger<T, U, This = any>(
   while (!empty || !finished) {
     const skip = signal.then(() => [])
     const emit = target!.next().then(({ value, done }) => ((finished = done) ? (empty ? [] : FOREVER) : [value]))
-    yield* await Promise.race([skip, emit])
+    emit.then(v => console.log('trigger emit', v[0]))
+    ;(emit =>
+      skip.then(async () => {
+        console.log('trigger skipped', emit)
+        console.log('skipped', (await emit)[0], { finished, empty })
+      }))(emit)
+    let values = await Promise.race([skip, emit])
+    console.log('yielding', values[0], { finished, empty })
+    yield* values
   }
 }

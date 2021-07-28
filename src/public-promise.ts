@@ -1,15 +1,19 @@
-export interface PublicPromise<T> extends Promise<T> {
-  resolve: (value: T | PromiseLike<T>) => void
-  reject: (reason?: any) => void
-}
+export class PublicPromise<T> extends Promise<T> {
+  //
+  public resolve: (value: T | PromiseLike<T>) => void
+  public reject: (reason?: any) => void
 
-export class PublicPromise<T> {
-  constructor() {
-    var resolve, reject
-    let promise = new Promise((r, j) => {
+  constructor()
+  constructor(executor = (_r, _j) => {}) {
+    let resolve, reject
+    super((r, j) => {
       resolve = r
       reject = j
+      // Promise requires you to accept an executor parameter on the constructor and to call it
+      return executor(r, j)
     })
-    return Object.assign(promise, { resolve, reject }) as this
+
+    this.resolve = resolve
+    this.reject = reject
   }
 }

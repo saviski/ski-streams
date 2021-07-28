@@ -9,9 +9,8 @@ export function domEvent<E extends Event = Event>(element: EventTarget, type: st
 
 export async function* domEvent(element: EventTarget, type: string) {
   const emitter = new AsyncEmitter<Event>()
-
-  const listener = event => emitter.yield(event)
+  const listener = (event: Event) => emitter.yield(event)
   element.addEventListener(type, listener)
+  emitter.finally(() => element.removeEventListener(type, listener))
   yield* emitter
-  element.removeEventListener(type, listener)
 }

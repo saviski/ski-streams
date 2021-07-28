@@ -5,21 +5,13 @@ class Stream<T> extends AsyncStream<T> {
   //
   emitter = new AsyncEmitter<T>()
 
-  static from<T>(...values: T[]): Stream<T> {
-    return new Stream<T>(
-      (async function* () {
-        yield* values
-      })()
-    )
-  }
-
-  constructor(private source: AsyncIterable<T>) {
+  constructor(private source: Iterable<T> | AsyncIterable<T>) {
     super()
     this.dispatch()
   }
 
   async dispatch() {
-    for await (let value of this.source) this.emitter.yield(value)
+    await this.emitter.yieldManyAsync(this.source)
     this.emitter.return()
   }
 
@@ -28,10 +20,10 @@ class Stream<T> extends AsyncStream<T> {
   }
 }
 
-export function stream<T>(source: AsyncIterable<T>): AsyncStream<T> {
+export function stream<T>(source: Iterable<T> | AsyncIterable<T>): AsyncStream<T> {
   return source instanceof AsyncStream ? (source as AsyncStream<T>) : new Stream(source)
 }
 
 export function emit<T>(...values: T[]): AsyncStream<T> {
-  return Stream.from(...values)
+  return new Stream(values)
 }

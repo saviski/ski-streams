@@ -17,10 +17,17 @@
     "noImplicitReturns": true,
     "preserveSymlinks": false,
     "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "test/**/*.ts",
   ],
   "exclude": [
     "./types/**"
