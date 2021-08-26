@@ -22,10 +22,9 @@ export class AsyncEmitter<T = any> extends SelfPromise<T | void> {
     return generator.done ? generator : (generator.next ??= this.newlink())
   }
 
-  private async *_next(node: IterChain<T>) {
+  async *#asyncGenerator(node: IterChain<T>) {
     let value = await node.value
     while (!node.done) {
-      console.log('emittter', value)
       yield* value
       node = this.getnext(node)
       value = await node.value
@@ -33,7 +32,7 @@ export class AsyncEmitter<T = any> extends SelfPromise<T | void> {
   }
 
   [Symbol.asyncIterator](): AsyncGenerator<T> {
-    const generator = this._next(this.head || this.tail)
+    const generator = this.#asyncGenerator(this.head || this.tail)
     return {
       [Symbol.asyncIterator]: () => this[Symbol.asyncIterator](),
       next: () => generator.next(),

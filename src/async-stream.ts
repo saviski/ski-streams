@@ -1,7 +1,7 @@
 import { isAsyncIterable } from './op/is.js'
 
 export abstract class AsyncStream<T> {
-  abstract [Symbol.asyncIterator](): AsyncIterator<T>
+  abstract [Symbol.asyncIterator](): AsyncIterableIterator<T>
 
   protected _new<U>(source: Iterable<U | Promise<U>> | AsyncIterable<U>): AsyncStream<U> {
     return new (this.constructor as new (...args: any[]) => AsyncStream<U>)(source)

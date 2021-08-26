@@ -5,7 +5,7 @@ enum Trigger {
   DATA,
 }
 
-export async function* trigger<T, U, This = any>(
+export function trigger<T, U, This = any>(
   source: AsyncIterable<T>,
   emitter: (this: This, v: T) => AsyncIterable<U>,
   context?: This
@@ -13,6 +13,12 @@ export async function* trigger<T, U, This = any>(
   const signals = source[Symbol.asyncIterator]()
   let iterable: AsyncIterable<U>
   let iterator: AsyncIterator<U>
+
+  let signal = next(signals, Trigger.SIGNAL)
+  let future: Promise<{ type: Trigger; done?: boolean; value: any }> = FOREVER
+  let finished = 0
+
+  return asyncGenerator()
 
   function create(value) {
     return emitter.call(context!, value)
@@ -22,26 +28,28 @@ export async function* trigger<T, U, This = any>(
     return asynciterator.next().then(s => ({ ...s, type }))
   }
 
-  let signal = next(signals, Trigger.SIGNAL)
-  let future: Promise<{ type: Trigger; done?: boolean; value: any }> = FOREVER
+  async function* asyncGenerator() {
+    while (finished < 2) {
+      let { value, done, type } = await Promise.race([signal, future])
 
-  while (true) {
-    let { value, done, type } = await Promise.race([signal, future])
-    if (type == Trigger.SIGNAL) {
-      if (done) {
-        yield* iterable!
-        return
-      }
-      iterable = create(value)
-      iterator = iterable[Symbol.asyncIterator]()
-      future = next(iterator, Trigger.DATA)
-      signal = next(signals, Trigger.SIGNAL)
-    } else if (type == Trigger.DATA) {
-      if (done) {
-        future = FOREVER
-      } else {
-        future = next(iterator!, Trigger.DATA)
-        yield value
+      if (type == Trigger.SIGNAL) {
+        if (done) {
+          finished++
+          signal = FOREVER
+        } else {
+          iterable = create(value)
+          iterator = iterable[Symbol.asyncIterator]()
+          future = next(iterator, Trigger.DATA)
+          signal = next(signals, Trigger.SIGNAL)
+        }
+      } else if (type == Trigger.DATA) {
+        if (done) {
+          finished++
+          future = FOREVER
+        } else {
+          future = next(iterator!, Trigger.DATA)
+          yield value
+        }
       }
     }
   }
