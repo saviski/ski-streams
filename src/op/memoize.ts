@@ -1,28 +1,32 @@
-import { AsyncEmitter } from '../async-emitter.js'
+import { AsyncStream } from '../async-stream.js'
 
-export const UNINITIALIZED = Error('UNINITIALIZED')
+export const UNINITIALIZED = new Error('UNINITIALIZED')
 
-export class MemoizedStream<T> extends AsyncEmitter<T> {
-  private val: any = UNINITIALIZED
+export interface Memoized<T> {
+  value: T
+}
 
-  constructor(private generator: AsyncIterable<T>, value?: T) {
+class Memoize<T> extends AsyncStream<T> implements Memoized<T> {
+  constructor(private source: AsyncIterable<T>) {
     super()
-    if (value) this.val = value
-    this.consume()
+  }
+
+  async *[Symbol.asyncIterator](): AsyncGenerator<T> {
+    for await (let value of this.source) {
+      this.value = value
+      yield value
+    }
+  }
+
+  set value(value) {
+    Object.defineProperty(this, 'value', { value, writable: true })
   }
 
   get value(): T {
-    if (this.val == UNINITIALIZED) throw this.val
-    return this.val
-  }
-
-  async consume() {
-    for await (let value of this.generator) {
-      this.yield((this.val = value))
-    }
+    throw UNINITIALIZED
   }
 }
 
-export function memoize<T>(source: AsyncIterable<T>): MemoizedStream<T> {
-  return new MemoizedStream<T>(source)
+export function memoize<T>(source: AsyncIterable<T>) {
+  return new Memoize(source)
 }

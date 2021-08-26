@@ -1,6 +1,5 @@
 import { AsyncStream } from '../async-stream.js'
 import { pick } from '../op/pick.js'
-import { stream } from '../stream.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {
@@ -8,6 +7,4 @@ declare module '../async-stream' {
   }
 }
 
-AsyncStream.prototype.pick = function (key) {
-  return stream(pick(this, key))
-}
+AsyncStream.define('pick', pick)

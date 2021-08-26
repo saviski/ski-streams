@@ -7,6 +7,4 @@ declare module '../async-stream' {
   }
 }
 
-AsyncStream.prototype.log = function (...args) {
-  log(this, ...args)
-}
+AsyncStream.define('log', log)

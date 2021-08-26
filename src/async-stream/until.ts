@@ -1,5 +1,4 @@
 import { AsyncStream } from '../async-stream.js'
-import { stream } from '../stream.js'
 import { until } from '../op/until.js'
 
 declare module '../async-stream' {
@@ -8,6 +7,4 @@ declare module '../async-stream' {
   }
 }
 
-AsyncStream.prototype.until = function (...stop) {
-  return stream(until(this, ...stop))
-}
+AsyncStream.define('until', until)

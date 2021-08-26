@@ -1,4 +1,4 @@
-export class MapOfMap<T extends object, K, U> {
+export class WeakMapOfMaps<T extends object, K, U> {
   private map = new WeakMap<T, Map<K, U>>()
 
   private getMap(index: T) {

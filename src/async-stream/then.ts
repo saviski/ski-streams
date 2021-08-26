@@ -10,6 +10,4 @@ declare module '../async-stream' {
   }
 }
 
-AsyncStream.prototype.then = function (onfulfilled, onrejected) {
-  return then(this, onfulfilled, onrejected)
-}
+AsyncStream.define('then', then)

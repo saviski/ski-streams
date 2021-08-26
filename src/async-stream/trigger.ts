@@ -1,5 +1,4 @@
 import { AsyncStream } from '../async-stream.js'
-import { stream } from '../stream.js'
 import { trigger } from '../op/trigger.js'
 
 declare module '../async-stream' {
@@ -8,6 +7,4 @@ declare module '../async-stream' {
   }
 }
 
-AsyncStream.prototype.trigger = function (factory, context?) {
-  return stream(trigger(this, factory, context))
-}
+AsyncStream.define('trigger', trigger)

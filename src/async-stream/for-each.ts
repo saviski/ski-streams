@@ -3,11 +3,8 @@ import { forEach } from '../op/for-each.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {
-    forEach(next: (v: T, index: number) => any, index?: number): this
+    forEach(next: (v: T, index: number) => any, index?: number): Promise<void>
   }
 }
 
-AsyncStream.prototype.forEach = function (next, index) {
-  forEach(this, next, index)
-  return this
-}
+AsyncStream.define('forEach', forEach)

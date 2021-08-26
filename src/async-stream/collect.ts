@@ -1,10 +1,10 @@
 import { AsyncStream } from '../async-stream.js'
-import { start } from '../op/start.js'
+import { collect } from '../op/collect.js'
 
 declare module '../async-stream' {
   interface AsyncStream<T> {
-    start(value: T): AsyncStream<T>
+    collect(): Promise<T[]>
   }
 }
 
-AsyncStream.define('start', start)
+AsyncStream.define('collect', collect)

@@ -1,41 +1,42 @@
-import { PublicPromise } from './public-promise.js'
+import { SelfPromise, PublicPromise } from './public-promise.js'
 
 interface Chain<T> {
   value: T
+  done?: true
   next?: Chain<T>
 }
 
-export class AsyncEmitter<T = any> extends PublicPromise<T | void> {
+type Iter<T> = Iterable<T | Promise<T>>
+type IterChain<T> = Chain<PublicPromise<Iter<T>>>
+
+export class AsyncEmitter<T = any> extends SelfPromise<T | void> {
   //
-  enabled = false
+  private tail: IterChain<T> = this.newlink()
+  private head?: IterChain<T> = this.tail
 
-  private resolver = this.create()
-
-  create() {
-    return { value: new PublicPromise<Iterable<T> | AsyncIterable<T>>() }
+  private newlink(): IterChain<T> {
+    return { value: new PublicPromise<Iter<T>>() }
   }
 
-  getnext(
-    generator: Chain<PublicPromise<Iterable<T> | AsyncIterable<T>>>
-  ): Chain<PublicPromise<Iterable<T> | AsyncIterable<T>>> {
-    return generator.next || (generator.next = this.create())
+  private getnext(generator: IterChain<T>) {
+    return generator.done ? generator : (generator.next ??= this.newlink())
   }
 
-  private async *_asyncGenerator(): AsyncGenerator<T, any, any> {
-    let generator = this.resolver
-    this.enabled = true
-    while (this.enabled) {
-      let promise = generator.value
-      yield* await promise
-      generator = this.getnext(generator)
+  private async *_next(node: IterChain<T>) {
+    let value = await node.value
+    while (!node.done) {
+      console.log('emittter', value)
+      yield* value
+      node = this.getnext(node)
+      value = await node.value
     }
   }
 
   [Symbol.asyncIterator](): AsyncGenerator<T> {
-    const generator = this._asyncGenerator()
+    const generator = this._next(this.head || this.tail)
     return {
-      next: (value: any) => generator.next(value),
       [Symbol.asyncIterator]: () => this[Symbol.asyncIterator](),
+      next: () => generator.next(),
       return: (value?: T) => this.return(value),
       throw: (error: any) => this.throw(error),
     }
@@ -45,26 +46,36 @@ export class AsyncEmitter<T = any> extends PublicPromise<T | void> {
     return this.yieldMany([value])
   }
 
-  yieldMany(values: Iterable<T> | AsyncIterable<T>) {
-    if (this.enabled) {
-      this.resolver.value.resolve(values)
-      this.resolver = this.getnext(this.resolver)
-    }
+  yieldMany(values: Iter<T>) {
+    delete this.head
+    this.tail.value.resolve(values)
+    this.tail = this.getnext(this.tail)
   }
 
-  async yieldManyAsync(values: Iterable<T> | AsyncIterable<T>) {
-    for await (let value of values) this.yield(value)
+  async async(values: AsyncIterable<T>) {
+    for await (let value of values) this.push(value)
+  }
+
+  push(value: T) {
+    this.pushMany([value])
+  }
+
+  async pushMany(values: Iter<T>) {
+    this.head ??= this.tail
+    this.tail.value.resolve(values)
+    this.tail = this.getnext(this.tail)
   }
 
   async return(value?: T) {
-    this.enabled = false
-    this.resolver.value.resolve(value ? [value] : [])
+    this.tail.done = true
+    this.tail.value.resolve([value!])
     this.resolve(value)
     return { value, done: true } as IteratorReturnResult<T | undefined>
   }
 
   async throw(error: any) {
-    this.resolver.value.reject(error)
+    this.tail.done = true
+    this.tail.value.reject(error)
     this.reject(error)
     return { value: undefined, done: true } as IteratorReturnResult<undefined>
   }

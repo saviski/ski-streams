@@ -1,29 +1,50 @@
+import { instantPromise } from './public-promise.js'
 import { AsyncStream } from './async-stream.js'
 import { AsyncEmitter } from './async-emitter.js'
+import { isAsyncIterable } from './op/is.js'
 
-class Stream<T> extends AsyncStream<T> {
+class AsyncIterableStream<T> extends AsyncStream<T> {
   //
-  emitter = new AsyncEmitter<T>()
+  private emitter = new AsyncEmitter<T>()
 
-  constructor(private source: Iterable<T> | AsyncIterable<T>) {
+  constructor(source: Iterable<T | Promise<T>> | AsyncIterable<T>) {
     super()
-    this.dispatch()
+    this.dispatch(source)
   }
 
-  async dispatch() {
-    await this.emitter.yieldManyAsync(this.source)
+  private async dispatch(source: Iterable<T | Promise<T>> | AsyncIterable<T>) {
+    isAsyncIterable(source) ? await this.emitter.async(source) : this.emitter.pushMany(source)
     this.emitter.return()
   }
 
-  [Symbol.asyncIterator](): AsyncGenerator<T> {
+  [Symbol.asyncIterator](): AsyncIterator<T> {
     return this.emitter[Symbol.asyncIterator]()
   }
 }
 
-export function stream<T>(source: Iterable<T> | AsyncIterable<T>): AsyncStream<T> {
-  return source instanceof AsyncStream ? (source as AsyncStream<T>) : new Stream(source)
+class SyncIterableStream<T> extends AsyncStream<T> {
+  constructor(private source: Iterable<T>) {
+    super()
+  }
+
+  protected _new<U>(source: Iterable<U | Promise<U>> | AsyncIterable<U>): AsyncStream<U> {
+    return Symbol.iterator in source ? new SyncIterableStream(source as Iterable<U>) : new AsyncIterableStream(source)
+  }
+
+  [Symbol.asyncIterator](): AsyncIterator<T> {
+    let iterator = this.source[Symbol.iterator]()
+    return {
+      next(n: any) {
+        return instantPromise(iterator.next(n))
+      },
+    }
+  }
 }
 
-export function emit<T>(...values: T[]): AsyncStream<T> {
-  return new Stream(values)
+export function stream<T>(source: Iterable<T | Promise<T>> | AsyncIterable<T>): AsyncStream<T> {
+  return source instanceof AsyncStream ? source : new AsyncIterableStream(source)
+}
+
+export function emit<T>(source: Iterable<T>): AsyncStream<T> {
+  return new SyncIterableStream(source)
 }
