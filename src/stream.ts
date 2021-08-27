@@ -1,4 +1,3 @@
-import { instantPromise } from './public-promise.js'
 import { AsyncStream } from './async-stream.js'
 import { AsyncEmitter } from './async-emitter.js'
 import { isAsyncIterable } from './op/is.js'
